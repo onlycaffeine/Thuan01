@@ -130,7 +130,6 @@ class Thuan_01():
     def search_for_pass(self, passwords_list, link, data, fail, max_words): # for dictionary and brute force
         try:
             #temp_file = self.create_temporary_copy(compress_file, passwords_list[1])
-			correctpwd = False
             for word in passwords_list:
 				r = requests.post(link, data)
                 password = word.strip('\r').strip('\n')
