@@ -362,8 +362,7 @@ class Thuan_01():
                         exit(0)
                     else:
                         print(self.blue("Start time ==> ") + self.white(start_time_show) + "\n")
-                        self.bruteforce_guess_password(chars, options.minlength, options.maxlength, option.link,
-                                                       option.data, option.fail)
+                        self.bruteforce_guess_password(chars, options.minlength, options.maxlength, option.link, option.data, option.fail)
 
                 else:
                     parser.error(" Choose a wordlist or bruteforce method, Use --help for more info")
