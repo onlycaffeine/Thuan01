@@ -172,215 +172,216 @@ class Thuan_01():
             self.process_lock.release()
 
 
-def last_words_check(self, max_words, passwords_list, link, data, fail):
-    while True:
-        if self.stop is True:
-            exit(0)
-        elif self.count == len(passwords_list):  # self_cont kam mishe
-            if self.file_type is "rar":
-                self.search_for_pass(passwords_list, link, data, fail, max_words)
-            if self.stop is False:
-                print("\n\t" + self.red("[-] Password not found") + "\n")
-                self.delete_temporary_directory()
-                self.end_time()
-            return
-        else:
-            pass
-
-
-def dict_guess_password(self, dict_file, link, data, fail):
-    last_check = 0
-    passwords_group = []
-    possible_words = self.count_word(dict_file)
-    self.last_process_number = int(possible_words / self.shot) + (possible_words % self.shot > 0)
-    self.count.put(possible_words)
-    # self.file_type = self.detect_file_type(file)
-    self.fun("Starting password cracking " + link)
-    print("\n " + self.blue("[*]") + self.white(" Count of possible passwords: ") + self.bwhite(str(possible_words)))
-    with open(dict_file, "r") as wordlist:
-        for word in wordlist:
-            passwords_group.append(word)
-            last_check += 1
-            self.handling_too_many_open_files_error()
-            if (len(passwords_group) == self.shot) or (possible_words - last_check == 0):
-                passwords = passwords_group
-                passwords_group = []
-                self.process_lock.acquire()
-                stop = self.stop.get()
-                self.stop.put(stop)
-                if stop is False:  # ok finishing all process after finding password
-                    t = Process(target=self.search_for_pass, args=(passwords, link, data, fail, possible_words))
-                    self.threads.append(t)
-                    self.process_count += 1
-                    t.start()
-                else:
-                    self.process_lock.release()
+    def last_words_check(self, max_words, passwords_list, link, data, fail):
+        while True:
+            if self.stop is True:
+                exit(0)
+            elif self.count == len(passwords_list):  # self_cont kam mishe
+                if self.file_type is "rar":
+                    self.search_for_pass(passwords_list, link, data, fail, max_words)
+                if self.stop is False:
+                    print("\n\t" + self.red("[-] Password not found") + "\n")
+                    self.delete_temporary_directory()
+                    self.end_time()
+                return
             else:
-                continue
+                pass
+    
+    
+    def dict_guess_password(self, dict_file, link, data, fail):
+        last_check = 0
+        passwords_group = []
+        possible_words = self.count_word(dict_file)
+        self.last_process_number = int(possible_words / self.shot) + (possible_words % self.shot > 0)
+        self.count.put(possible_words)
+        # self.file_type = self.detect_file_type(file)
+        self.fun("Starting password cracking " + link)
+        print("\n " + self.blue("[*]") + self.white(" Count of possible passwords: ") + self.bwhite(str(possible_words)))
+        with open(dict_file, "r") as wordlist:
+            for word in wordlist:
+                passwords_group.append(word)
+                last_check += 1
+                self.handling_too_many_open_files_error()
+                if (len(passwords_group) == self.shot) or (possible_words - last_check == 0):
+                    passwords = passwords_group
+                    passwords_group = []
+                    self.process_lock.acquire()
+                    stop = self.stop.get()
+                    self.stop.put(stop)
+                    if stop is False:  # ok finishing all process after finding password
+                        t = Process(target=self.search_for_pass, args=(passwords, link, data, fail, possible_words))
+                        self.threads.append(t)
+                        self.process_count += 1
+                        t.start()
+                    else:
+                        self.process_lock.release()
+                else:
+                    continue
+            for x in self.threads:
+                x.join()
+            self.delete_temporary_directory()
+            self.end_time()
+    
+    
+    def bruteforce_guess_password(self, chars, min, max, link, data, fail):
+        last_check = 0
+        passwords_group = []
+        possible_com = self.count_possible_com(chars, int(min), int(max))
+        self.last_process_number = int(possible_com / self.shot) + (possible_com % self.shot > 0)
+        self.count.put(possible_com)
+        # self.file_type = self.detect_file_type(file)
+        self.fun("Starting password cracking for " + link)
+        print("\n " + self.blue("[*]") + self.white(" Count of possible passwords: ") + self.bwhite(str(possible_com)))
+        for password_length in range(int(min), int(max) + 1):
+            for guess in itertools.product(chars, repeat=password_length):
+                guess = ''.join(guess)
+                passwords_group.append(guess)
+                last_check += 1
+                self.handling_too_many_open_files_error()
+                if (len(passwords_group) == self.shot) or (possible_com - last_check == 0):
+                    passwords = passwords_group
+                    passwords_group = []
+                    self.process_lock.acquire()
+                    stop = self.stop.get()
+                    self.stop.put(stop)
+                    if stop is False:  # ok finishing all process after finding password
+                        t = Process(target=self.search_for_pass, args=(passwords, link, data, fail, possible_com))
+                        self.threads.append(t)
+                        self.process_count += 1
+                        t.start()
+                    else:
+                        self.process_lock.release()
+                else:
+                    continue
         for x in self.threads:
             x.join()
         self.delete_temporary_directory()
         self.end_time()
-
-
-def bruteforce_guess_password(self, chars, min, max, link, data, fail):
-    last_check = 0
-    passwords_group = []
-    possible_com = self.count_possible_com(chars, int(min), int(max))
-    self.last_process_number = int(possible_com / self.shot) + (possible_com % self.shot > 0)
-    self.count.put(possible_com)
-    # self.file_type = self.detect_file_type(file)
-    self.fun("Starting password cracking for " + link)
-    print("\n " + self.blue("[*]") + self.white(" Count of possible passwords: ") + self.bwhite(str(possible_com)))
-    for password_length in range(int(min), int(max) + 1):
-        for guess in itertools.product(chars, repeat=password_length):
-            guess = ''.join(guess)
-            passwords_group.append(guess)
-            last_check += 1
-            self.handling_too_many_open_files_error()
-            if (len(passwords_group) == self.shot) or (possible_com - last_check == 0):
-                passwords = passwords_group
-                passwords_group = []
-                self.process_lock.acquire()
-                stop = self.stop.get()
-                self.stop.put(stop)
-                if stop is False:  # ok finishing all process after finding password
-                    t = Process(target=self.search_for_pass, args=(passwords, link, data, fail, possible_com))
-                    self.threads.append(t)
-                    self.process_count += 1
-                    t.start()
-                else:
-                    self.process_lock.release()
+    
+    
+    def make_chars(self, char_type):
+        chartype_list = char_type.split(",")
+        chars = ""
+        for chartype in chartype_list:
+            if chartype == "lowercase":
+                chars += string.ascii_lowercase
+            elif chartype == "uppercase":
+                chars += string.ascii_uppercase
+            elif chartype == "letters":
+                chars += string.ascii_letters
+            elif chartype == "digits":
+                chars += string.digits
+            elif chartype == "symbols":
+                chars += string.punctuation
+            elif chartype == "space":
+                chars += " "
             else:
-                continue
-    for x in self.threads:
-        x.join()
-    self.delete_temporary_directory()
-    self.end_time()
-
-
-def make_chars(self, char_type):
-    chartype_list = char_type.split(",")
-    chars = ""
-    for chartype in chartype_list:
-        if chartype == "lowercase":
-            chars += string.ascii_lowercase
-        elif chartype == "uppercase":
-            chars += string.ascii_uppercase
-        elif chartype == "letters":
-            chars += string.ascii_letters
-        elif chartype == "digits":
-            chars += string.digits
-        elif chartype == "symbols":
-            chars += string.punctuation
-        elif chartype == "space":
-            chars += " "
-        else:
-            return False
-    return chars
-
-
-def banner(self):
-    term.clear()
-    term.pos(1, 1)
-    # check if font "epic" exists on this system
-    # sudo wget http://www.figlet.org/fonts/epic.flf -O /usr/share/figlet/epic.flf
-    bannerfont = "epic" if os.path.exists('/usr/share/figlet/epic.flf') else "banner"
-    banner = pyfiglet.figlet_format("THUAN", font=bannerfont).replace("\n", "\n\t\t", 7)
-
-    cprint("\r\n\t" + "@" * 61, "blue", end="")
-    cprint("\n\t\t" + banner + "\t\tAuthor : Hamed Hosseini", "blue", attrs=['bold'])
-    cprint("\t" + "@" * 61 + "\n", "blue")
-
-
-def end_time(self):
-    self.stop = True
-    end_time_show = time.asctime()
-    end_time = time.monotonic()
-    execution_time = (timedelta(seconds=end_time - self.start_time))
-    print(self.blue("End time ==> ") + self.white(end_time_show))
-    print(self.blue("Execution time ==> ") + self.white(str(execution_time)) + "\n")
-    term.saveCursor()
-    term.pos(7, 15)
-    term.writeLine("ok", term.green, term.blink)
-    term.restoreCursor()
-    exit(0)
-
-
-def main(self):
-    start_time_show = time.asctime()
-    usage = "%prog [options] [args]" \
-            "\n\nDictionary Mode:" \
-            "\n   %prog -f <file> -d <wordlist>" \
-            "\n\nBrute force Mode:" \
-            "\n   %prog -f <file> -b <char_type> -m <min_length> -x <max_length>" \
-            "\n\n   Available char_type:" \
-            "\n\t<lowercase>  The lowercase letters abcdefghijklmnopqrstuvwxyz" \
-            "\n\t<uppercase>  The uppercase letters ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
-            "\n\t<letters>    The concatenation of the lowercase and uppercase" \
-            "\n\t<digits>     numbers 0123456789" \
-            "\n\t<symbols>    punctuation characters !#$%&'()*+,-./:;<=>?@[\]^_`{|}~'" + '"' \
-                                                                                         "\n\t<space>      space character" \
-                                                                                         "\n   You can select multiple character types." \
-                                                                                         "\n\tExample: %prog -f <file> -b <space,digits> -m 1 -x 8"
-
-    parser = optparse.OptionParser(usage)
-    parser.add_option("-d", dest="dictfile", type='string', help="Specifies dictionary file")
-    # parser.add_option("-f", dest="file", type='string', help="Specifies the file")
-    parser.add_option("-lt", dest="link", type='string', help="Specifies the link")
-    parser.add_option("-dt", dest="data", type='string', help="Specifies the data")
-    parser.add_option("-ft", dest="fail", type='string', help="Specifies the fault")
-    parser.add_option("-b", dest="chartype", type='string', help="Specifies the character type")
-    parser.add_option("-m", dest="minlength", type='string', help="Specifies minimum length of password")
-    parser.add_option("-x", dest="maxlength", type='string', help="Specifies maximum length of password")
-
-    (options, args) = parser.parse_args()
-    try:
-        if options.file:
-            if os.path.isfile(options.file):
-                file = os.path.abspath(options.file)
-                if options.dictfile:
-                    if os.path.isfile(options.dictfile):
-                        dictfile = os.path.abspath(options.dictfile)
-                        print(self.blue("Start time ==> ") + self.white(start_time_show) + "\n")
-                        self.dict_guess_password(dictfile, file)
+                return False
+        return chars
+    
+    
+    def banner(self):
+        term.clear()
+        term.pos(1, 1)
+            # check if font "epic" exists on this system
+        # sudo wget http://www.figlet.org/fonts/epic.flf -O /usr/share/figlet/epic.flf
+        bannerfont = "epic" if os.path.exists('/usr/share/figlet/epic.flf') else "banner"
+        banner = pyfiglet.figlet_format("THUAN", font=bannerfont).replace("\n", "\n\t\t", 7)
+    
+        cprint("\r\n\t" + "@" * 61, "blue", end="")
+        cprint("\n\t\t" + banner + "\t\tAuthor : Hamed Hosseini", "blue", attrs=['bold'])
+        cprint("\t" + "@" * 61 + "\n", "blue")
+    
+    
+    def end_time(self):
+        self.stop = True
+        end_time_show = time.asctime()
+        end_time = time.monotonic()
+        execution_time = (timedelta(seconds=end_time - self.start_time))
+        print(self.blue("End time ==> ") + self.white(end_time_show))
+        print(self.blue("Execution time ==> ") + self.white(str(execution_time)) + "\n")
+        term.saveCursor()
+        term.pos(7, 15)
+        term.writeLine("ok", term.green, term.blink)
+        term.restoreCursor()
+        exit(0)
+    
+    
+    def main(self):
+        start_time_show = time.asctime()
+        usage = "%prog [options] [args]" \
+                "\n\nDictionary Mode:" \
+                "\n   %prog -f <file> -d <wordlist>" \
+                "\n\nBrute force Mode:" \
+                "\n   %prog -f <file> -b <char_type> -m <min_length> -x <max_length>" \
+                "\n\n   Available char_type:" \
+                "\n\t<lowercase>  The lowercase letters abcdefghijklmnopqrstuvwxyz" \
+                "\n\t<uppercase>  The uppercase letters ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
+                "\n\t<letters>    The concatenation of the lowercase and uppercase" \
+                "\n\t<digits>     numbers 0123456789" \
+                "\n\t<symbols>    punctuation characters !#$%&'()*+,-./:;<=>?@[\]^_`{|}~'" + '"' \
+                                                                                             "\n\t<space>      space character" \
+                                                                                             "\n   You can select multiple character types." \
+                                                                                             "\n\tExample: %prog -f <file> -b <space,digits> -m 1 -x 8"
+    
+        parser = optparse.OptionParser(usage)
+        parser.add_option("-d", dest="dictfile", type='string', help="Specifies dictionary file")
+        # parser.add_option("-f", dest="file", type='string', help="Specifies the file")
+        parser.add_option("-lt", dest="link", type='string', help="Specifies the link")
+        parser.add_option("-dt", dest="data", type='string', help="Specifies the data")
+        parser.add_option("-ft", dest="fail", type='string', help="Specifies the fault")
+        parser.add_option("-b", dest="chartype", type='string', help="Specifies the character type")
+        parser.add_option("-m", dest="minlength", type='string', help="Specifies minimum length of password")
+        parser.add_option("-x", dest="maxlength", type='string', help="Specifies maximum length of password")
+    
+        (options, args) = parser.parse_args()
+        try:
+            if options.file:
+                if os.path.isfile(options.file):
+                    file = os.path.abspath(options.file)
+                    if options.dictfile:
+                        if os.path.isfile(options.dictfile):
+                            dictfile = os.path.abspath(options.dictfile)
+                            print(self.blue("Start time ==> ") + self.white(start_time_show) + "\n")
+                            self.dict_guess_password(dictfile, file)
+                        else:
+                            parser.error(" " + options.dictfile + " dictionary file does not exist")
+                            exit(0)
+                    elif options.chartype:
+                        chars = self.make_chars(options.chartype)
+                        if chars is False:
+                            parser.error(" " + options.chartype + " character type is not valid, Use --help for more info")
+                        if options.minlength is None:
+                            parser.error(" Enter minimum length of password")
+                            exit(0)
+                        if options.maxlength is None:
+                            parser.error(" Enter maximum length of password")
+                            exit(0)
+                        if options.minlength > options.maxlength:
+                            parser.error(" Min and Max must be numbers and Min must be \nless than Max or be the same"
+                                         ", Use --help for more info")
+                            exit(0)
+                        else:
+                            print(self.blue("Start time ==> ") + self.white(start_time_show) + "\n")
+                            self.bruteforce_guess_password(chars, options.minlength, options.maxlength, file)
+    
                     else:
-                        parser.error(" " + options.dictfile + " dictionary file does not exist")
+                        parser.error(" Choose a wordlist or bruteforce method, Use --help for more info")
                         exit(0)
-                elif options.chartype:
-                    chars = self.make_chars(options.chartype)
-                    if chars is False:
-                        parser.error(" " + options.chartype + " character type is not valid, Use --help for more info")
-                    if options.minlength is None:
-                        parser.error(" Enter minimum length of password")
-                        exit(0)
-                    if options.maxlength is None:
-                        parser.error(" Enter maximum length of password")
-                        exit(0)
-                    if options.minlength > options.maxlength:
-                        parser.error(" Min and Max must be numbers and Min must be \nless than Max or be the same"
-                                     ", Use --help for more info")
-                        exit(0)
-                    else:
-                        print(self.blue("Start time ==> ") + self.white(start_time_show) + "\n")
-                        self.bruteforce_guess_password(chars, options.minlength, options.maxlength, file)
-
                 else:
-                    parser.error(" Choose a wordlist or bruteforce method, Use --help for more info")
+                    parser.error("" + options.file + " file does not exist")
                     exit(0)
             else:
-                parser.error("" + options.file + " file does not exist")
+                parser.error(" Choose a file, Use --help for more info")
                 exit(0)
-        else:
-            parser.error(" Choose a file, Use --help for more info")
+    
+        except KeyboardInterrupt:
+            time.sleep(1)
+            self.delete_temporary_directory()
+            print(self.red("\n\n [-] Detected CTRL+C") + self.white("\n closing app...\n Finish\n"))
+            # self.end_time()
             exit(0)
 
-    except KeyboardInterrupt:
-        time.sleep(1)
-        self.delete_temporary_directory()
-        print(self.red("\n\n [-] Detected CTRL+C") + self.white("\n closing app...\n Finish\n"))
-        # self.end_time()
-        exit(0)
 
 if __name__ == "__main__":
     cracker = Thuan_01()
