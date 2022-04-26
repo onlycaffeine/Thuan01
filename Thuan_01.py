@@ -131,7 +131,7 @@ class Thuan_01():
         try:
             #temp_file = self.create_temporary_copy(compress_file, passwords_list[1])
             for word in passwords_list:
-				r = requests.post(link, data)
+				r = requests.post(link, data=data)
                 password = word.strip('\r').strip('\n')
                 stop = self.stop.get()
                 self.stop.put(stop)
