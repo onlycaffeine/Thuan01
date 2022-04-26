@@ -336,45 +336,42 @@ class Thuan_01():
     
         (options, args) = parser.parse_args()
         try:
-            if options.file:
-                if os.path.isfile(options.file):
-                    file = os.path.abspath(options.file)
-                    if options.dictfile:
-                        if os.path.isfile(options.dictfile):
-                            dictfile = os.path.abspath(options.dictfile)
-                            print(self.blue("Start time ==> ") + self.white(start_time_show) + "\n")
-                            self.dict_guess_password(dictfile, file)
-                        else:
-                            parser.error(" " + options.dictfile + " dictionary file does not exist")
-                            exit(0)
-                    elif options.chartype:
-                        chars = self.make_chars(options.chartype)
-                        if chars is False:
-                            parser.error(" " + options.chartype + " character type is not valid, Use --help for more info")
-                        if options.minlength is None:
-                            parser.error(" Enter minimum length of password")
-                            exit(0)
-                        if options.maxlength is None:
-                            parser.error(" Enter maximum length of password")
-                            exit(0)
-                        if options.minlength > options.maxlength:
-                            parser.error(" Min and Max must be numbers and Min must be \nless than Max or be the same"
-                                         ", Use --help for more info")
-                            exit(0)
-                        else:
-                            print(self.blue("Start time ==> ") + self.white(start_time_show) + "\n")
-                            self.bruteforce_guess_password(chars, options.minlength, options.maxlength, file)
-    
+            if options.link:
+                # link = os.path.abspath(options.file)
+                if options.dictfile:
+                    if os.path.isfile(options.dictfile):
+                        dictfile = os.path.abspath(options.dictfile)
+                        print(self.blue("Start time ==> ") + self.white(start_time_show) + "\n")
+                        self.dict_guess_password(dictfile, option.link, option.data, option.fail)
                     else:
-                        parser.error(" Choose a wordlist or bruteforce method, Use --help for more info")
+                        parser.error(" " + options.dictfile + " dictionary file does not exist")
                         exit(0)
+                elif options.chartype:
+                    chars = self.make_chars(options.chartype)
+                    if chars is False:
+                        parser.error(" " + options.chartype + " character type is not valid, Use --help for more info")
+                    if options.minlength is None:
+                        parser.error(" Enter minimum length of password")
+                        exit(0)
+                    if options.maxlength is None:
+                        parser.error(" Enter maximum length of password")
+                        exit(0)
+                    if options.minlength > options.maxlength:
+                        parser.error(" Min and Max must be numbers and Min must be \nless than Max or be the same"
+                                     ", Use --help for more info")
+                        exit(0)
+                    else:
+                        print(self.blue("Start time ==> ") + self.white(start_time_show) + "\n")
+                        self.bruteforce_guess_password(chars, options.minlength, options.maxlength, option.link,
+                                                       option.data, option.fail)
+
                 else:
-                    parser.error("" + options.file + " file does not exist")
+                    parser.error(" Choose a wordlist or bruteforce method, Use --help for more info")
                     exit(0)
             else:
-                parser.error(" Choose a file, Use --help for more info")
+                parser.error(" Choose a link, Use --help for more info")
                 exit(0)
-    
+
         except KeyboardInterrupt:
             time.sleep(1)
             self.delete_temporary_directory()
