@@ -142,36 +142,34 @@ class Thuan_01():
                         with open("tries.txt", "a") as f:
                             f.write(f"{passwd}\n")
                             f.close()
-                    # print(f"Incorrect password {passwd}\n")
+                        # print(f"Incorrect password {passwd}\n")
                     else:
                         self.stop.get()
-                self.stop.put(True)
-                time.sleep(3)
-                print("\n\t" + self.green("[+] Password Found: " + password + '\n'))
-                # correctpwd = True
-                # print(f"Correct password {passwd}!\n")
-                # with open("correct_pass.txt", "w") as f:
-                #	f.write(passwd)
-                break
+                        self.stop.put(True)
+                        time.sleep(3)
+                        print("\n\t" + self.green("[+] Password Found: " + password + '\n'))
+                        # correctpwd = True
+                        # print(f"Correct password {passwd}!\n")
+                        # with open("correct_pass.txt", "w") as f:
+                        #	f.write(passwd)
+                        break
 
-    else:
-    break
-
-
-# if os.path.isfile(temp_file):
-# os.remove(os.path.abspath(temp_file))
-# last_process_number = int(max_words / 500) + (max_words % 500 > 0)
-if str(self.last_process_number) in str(current_process().name):
-    time.sleep(20)
-    stop = self.stop.get()
-    self.stop.put(stop)
-    if stop is False:
-        print("\n\t" + self.red("[-] password not found") + "\n")
-    else:
-        pass
-self.process_lock.release()
-except KeyboardInterrupt:
-self.process_lock.release()
+                else:
+                    break
+            # if os.path.isfile(temp_file):
+            # os.remove(os.path.abspath(temp_file))
+            # last_process_number = int(max_words / 500) + (max_words % 500 > 0)
+            if str(self.last_process_number) in str(current_process().name):
+                time.sleep(20)
+                stop = self.stop.get()
+                self.stop.put(stop)
+                if stop is False:
+                    print("\n\t" + self.red("[-] password not found") + "\n")
+                else:
+                    pass
+            self.process_lock.release()
+        except KeyboardInterrupt:
+            self.process_lock.release()
 
 
 def last_words_check(self, max_words, passwords_list, link, data, fail):
