@@ -337,7 +337,7 @@ class Thuan_01():
                     if os.path.isfile(options.dictfile):
                         dictfile = os.path.abspath(options.dictfile)
                         print(self.blue("Start time ==> ") + self.white(start_time_show) + "\n")
-                        self.dict_guess_password(dictfile, option.username, option.link, option.data, option.fail)
+                        self.dict_guess_password(dictfile, options.username, options.link, options.data, options.fail)
                     else:
                         parser.error(" " + options.dictfile + " dictionary file does not exist")
                         exit(0)
@@ -357,8 +357,8 @@ class Thuan_01():
                         exit(0)
                     else:
                         print(self.blue("Start time ==> ") + self.white(start_time_show) + "\n")
-                        self.bruteforce_guess_password(chars, options.minlength, options.maxlength, option.username,
-                                                       option.link, option.data, option.fail)
+                        self.bruteforce_guess_password(chars, options.minlength, options.maxlength, options.username,
+                                                       options.link, options.data, options.fail)
 
                 else:
                     parser.error(" Choose a wordlist or bruteforce method, Use --help for more info")
