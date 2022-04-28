@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import requests
+import json
 import optparse  # call option -p -h
 import itertools  # to brtue force fast
 import string
@@ -285,7 +286,7 @@ class Thuan_01():
         banner = pyfiglet.figlet_format("THUAN", font=bannerfont).replace("\n", "\n\t\t", 7)
 
         cprint("\r\n\t" + "@" * 61, "blue", end="")
-        cprint("\n\t\t" + banner + "\t\tAuthor : Hamed Hosseini", "blue", attrs=['bold'])
+        cprint("\n\t\t" + banner + "\t\tAuthor : Thuan Nguyen", "yeallow", attrs=['bold'])
         cprint("\t" + "@" * 61 + "\n", "blue")
 
     def end_time(self):
