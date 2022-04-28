@@ -16,7 +16,6 @@ import shutil  # copy file
 import subprocess
 from multiprocessing import Process, BoundedSemaphore, Queue, current_process, cpu_count
 
-
 class Thuan_01():
     def __init__(self):
         self.start_time = time.monotonic()
