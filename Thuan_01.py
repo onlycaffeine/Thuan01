@@ -374,6 +374,7 @@ class Thuan_01():
             # self.end_time()
             exit(0)
 
-    if __name__ == "__main__":
-        cracker = Thuan_01()
-        cracker.main()
+            
+if __name__ == "__main__":
+    cracker = Thuan_01()
+    cracker.main()
