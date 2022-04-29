@@ -134,7 +134,12 @@ class Thuan_01():
             # temp_file = self.create_temporary_copy(compress_file, passwords_list[1])
             for word in passwords_list:
                 password = word.strip('\r').strip('\n')
-                data1 = {"chkSubmit": "ok", "txtLoginId": username, "txtPassword": password, "txtSel": 1}
+                u = '"' + username + '"'
+                p = '"' + password + '"'
+                data0 = data.replace("^USER^", u)
+                data00 = data0.replace("^PASS^", p)
+                data1 = json.loads(data00)
+                # data1 = {"chkSubmit": "ok", "txtLoginId": username, "txtPassword": password, "txtSel": 1}
                 r = requests.post(link, data=data1)
                 stop = self.stop.get()
                 self.stop.put(stop)
@@ -153,7 +158,7 @@ class Thuan_01():
                         # correctpwd = True
                         # print(f"Correct password {passwd}!\n")
                         with open("correct_pass.txt", "w") as f:
-                        	f.write(password)
+                            f.write(password)
                         break
 
                 else:
