@@ -183,16 +183,16 @@ class Thuan_01():
             # temp_file = self.create_temporary_copy(compress_file, passwords_list[1])
             for word in passwords_list:
                 password = word.strip('\r').strip('\n')
-                data0 = data.replace("^USER^", username)
-                data00 = data0.replace("PASS^", password)
-                data1 = link + data00
+                data0 = link.replace("^USER^", username)
+                data00 = data0.replace("^PASS^", password)
+                #data1 = link + data00
                 cookie1 = json.loads(cookie)
                 # data1 = {"chkSubmit": "ok", "txtLoginId": username, "txtPassword": password, "txtSel": 1}
                 if len(token) > 1:
-                    data11 = data1 + token
+                    data11 = data0 + token
                     r = requests.get(data11, cookies=cookie1)
                 else:
-                    r = requests.get(data1, cookies=cookie1)
+                    r = requests.get(data00, cookies=cookie1)
                     stop = self.stop.get()
                     self.stop.put(stop)
                     if stop is False:  # if find password dont doing more is false
