@@ -129,7 +129,7 @@ class Thuan_01():
         if os.path.exists("temp_directory"):
             shutil.rmtree("temp_directory")
 
-    def search_for_pass(self, passwords_list, username, link, token, data, cookie, fail, max_words):  # for dictionary and brute force
+    def search_for_pass(self, passwords_list, username, link, token, data, cookie, fail, max_words):  # for post method
         try:
             # temp_file = self.create_temporary_copy(compress_file, passwords_list[1])
             for word in passwords_list:
@@ -138,7 +138,6 @@ class Thuan_01():
                 p = '"' + password + '"'
                 data0 = data.replace("^USER^", u)
                 data00 = data0.replace("^PASS^", p)
-                data1 = json.loads(data00)
                 cookie1 = json.loads(cookie)
 
                 if len(token) > 1:
@@ -152,6 +151,7 @@ class Thuan_01():
                     data11 = json.loads(data000)
                     r = requests.post(link, data=data11, cookie=cookie1)
                 else:
+                    data1 = json.loads(data00)
                     r = requests.post(link, data=data1, cookie=cookie1)
                 stop = self.stop.get()
                 self.stop.put(stop)
