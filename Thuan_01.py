@@ -149,10 +149,10 @@ class Thuan_01():
                     t = '"' + tk_value + '"'
                     data000 = data00.replace("^TOKEN^", t)
                     data11 = json.loads(data000)
-                    r = requests.post(link, data=data11, cookie=cookie1)
+                    r = requests.post(link, data=data11, cookies=cookie1)
                 else:
                     data1 = json.loads(data00)
-                    r = requests.post(link, data=data1, cookie=cookie1)
+                    r = requests.post(link, data=data1, cookies=cookie1)
                 stop = self.stop.get()
                 self.stop.put(stop)
                 if stop is False:  # if we find password not doing more is false
