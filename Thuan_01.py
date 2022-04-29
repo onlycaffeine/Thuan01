@@ -303,7 +303,7 @@ class Thuan_01():
                     stop = self.stop.get()
                     self.stop.put(stop)
                     if stop is False:  # ok finishing all process after finding password
-                        t = Process(target=self.search_for_pass,
+                        t = Process(target=self.search_for_pass_dvwa,
                                     args=(passwords, username, link, token, data, cookie, fail, possible_words))
                         self.threads.append(t)
                         self.process_count += 1
