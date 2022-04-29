@@ -202,7 +202,7 @@ class Thuan_01():
                     content = rq.text
                     tk = content.find(token)
                     tk_value = "&" + token + "=" + content[(tk + len(token) + 9):(tk + len(token) + 9 + 32)] + "#"
-                    data11 = link.replace("#", tk_value)
+                    data11 = data00.replace("#", tk_value)
                     # value='32-chars'
                     r = requests.get(data11, cookies=cookie1)
                     stop = self.stop.get()
