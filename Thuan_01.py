@@ -206,31 +206,31 @@ class Thuan_01():
                     dt = r.text
                 else:
                     r = requests.get(data00, cookies=cookie1)
-                    stop = self.stop.get()
-                    self.stop.put(stop)
-                    if stop is False:  # if find password dont doing more is false
-                        self.counter(max_words)
-                        if fail in r.text:
-                            with open("tries.txt", "a") as f:
-                                f.write(f"{password}\n")
-                                f.close()
-                            # print(f"Incorrect password {passwd}\n")
-                        else:
-                            self.stop.get()
-                            self.stop.put(True)
-                            time.sleep(3)
-                            print("\n\t" + self.green("[+] Password Found: " + password + '\n'))
-                            # correctpwd = True
-                            # print(f"Correct password {passwd}!\n")
-                            with open("correct_pass.txt", "w") as f:
-                                f.write(password)
-                            break
-
+                stop = self.stop.get()
+                self.stop.put(stop)
+                if stop is False:  # if find password dont doing more is false
+                    self.counter(max_words)
+                    if fail in r.text:
+                        with open("tries.txt", "a") as f:
+                            f.write(f"{password}\n")
+                            f.close()
+                        # print(f"Incorrect password {passwd}\n")
                     else:
+                        self.stop.get()
+                        self.stop.put(True)
+                        time.sleep(3)
+                        print("\n\t" + self.green("[+] Password Found: " + password + '\n'))
+                        # correctpwd = True
+                        # print(f"Correct password {passwd}!\n")
+                        with open("correct_pass.txt", "w") as f:
+                            f.write(password)
                         break
-                    # if os.path.isfile(temp_file):
-                    # os.remove(os.path.abspath(temp_file))
-                    # last_process_number = int(max_words / 500) + (max_words % 500 > 0)
+
+                else:
+                    break
+                # if os.path.isfile(temp_file):
+                # os.remove(os.path.abspath(temp_file))
+                # last_process_number = int(max_words / 500) + (max_words % 500 > 0)
             if str(self.last_process_number) in str(current_process().name):
                 time.sleep(20)
                 stop = self.stop.get()
