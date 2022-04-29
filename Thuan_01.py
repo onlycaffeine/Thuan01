@@ -137,7 +137,7 @@ class Thuan_01():
                 u = '"' + username + '"'
                 p = '"' + password + '"'
                 data0 = data.replace("^USER^", u)
-                data00 = data0.replace("PASS^", p)
+                data00 = data0.replace("^PASS^", p)
                 data1 = json.loads(data00)
                 # data1 = {"chkSubmit": "ok", "txtLoginId": username, "txtPassword": password, "txtSel": 1}
                 r = requests.post(link, data=data1)
