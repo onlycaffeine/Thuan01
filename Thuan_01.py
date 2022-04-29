@@ -200,10 +200,12 @@ class Thuan_01():
                 r
                 if len(token) > 1:
                     rq = requests.get(data00, cookies=cookie1)
-                    tk = rq.text
-                    data11 = link.replace("#", tk)
+                    content = rq.text
+                    tk = content.find(token)
+                    tk_value = "&" + token + "=" + content[(tk + len(token) + 9):(tk + len(token) + 9 + 32)] + "#"
+                    data11 = link.replace("#", tk_value)
+                    # value='32-chars'
                     r = requests.get(data11, cookies=cookie1)
-                    # dt = r.text
                 else:
                     r = requests.get(data00, cookies=cookie1)
                 stop = self.stop.get()
