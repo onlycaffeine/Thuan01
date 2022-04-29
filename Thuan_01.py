@@ -197,13 +197,13 @@ class Thuan_01():
                 #data1 = link + data00
                 cookie1 = json.loads(cookie)
                 # data1 = {"chkSubmit": "ok", "txtLoginId": username, "txtPassword": password, "txtSel": 1}
-                dt = ''
+                r
                 if len(token) > 1:
                     rq = requests.get(data00, cookies=cookie1)
                     tk = rq.text
                     data11 = link.replace("#", tk)
                     r = requests.get(data11, cookies=cookie1)
-                    dt = r.text
+                    # dt = r.text
                 else:
                     r = requests.get(data00, cookies=cookie1)
                 stop = self.stop.get()
