@@ -932,7 +932,7 @@ class Thuan_01():
         parser.add_option("-t", dest="token", type='string', help="Specifies the user token")
         parser.add_option("-m", dest="minlength", type='string', help="Specifies minimum length of password")
         parser.add_option("-x", dest="maxlength", type='string', help="Specifies maximum length of password")
-        parser.add_option("-M", dest="method", type='string', help="Specifies method")
+        parser.add_option("-M", dest="method", type='string', help="Specifies method: post-form or get-form")
 
         (options, args) = parser.parse_args()
         try:
