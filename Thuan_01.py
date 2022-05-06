@@ -899,7 +899,7 @@ class Thuan_01():
         usage = "%prog [options] [args]" \
                 "\n\nDictionary Mode:" \
                 "\n   %prog -a 'dictionary' -l <url> [-U <file>|-u username] [-P <file>|-p password] " \
-                "-M <post-method|get-method> -d <data> -c <cookies> -t <name of token> -f <fail login message>" \
+                "-M <post-form|get-form> -d <data> -c <cookies> -t <name of token> -f <fail login message>" \
                 "\n\nBrute force Mode:" \
                 "\n   %prog -a 'bruteforce' -l <url> [-U <char_type> -m <min_length> -x <max_length> |-u username] " \
                 "[-P <char_type> -m <min_length> -x <max_length>|-p password] " \
