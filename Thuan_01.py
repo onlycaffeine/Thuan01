@@ -903,7 +903,7 @@ class Thuan_01():
                 "\n\nBrute force Mode:" \
                 "\n   %prog -a 'bruteforce' -l <url> [-U <char_type> -m <min_length> -x <max_length> |-u username] " \
                 "[-P <char_type> -m <min_length> -x <max_length>|-p password] " \
-                "-M <post-method|get-method> -d <data> -c <cookies> -t <token> -f <fail login message>" \
+                "-M <post-form|get-form> -d <data> -c <cookies> -t <token> -f <fail login message>" \
                 "\n\nNote:" \
                 "\n   Replace data of username, password, token with: ^USER^, ^PASS^, ^TOKEN^" \
                 "\n\tExample: -l 'http://1.1.1.1/brute/?tfusername=^USER^&tfpassword=^PASS^&tftoken=^TOKEN^#^'" \
