@@ -24,7 +24,7 @@ Download Thuan_01 by cloning the Git repository:
 To get a list of all options and learn how to use this app, enter the following command:<br />
   <br />```$ python3 Thuan_01.py -h```
   <br /><br /> 	
-  ![alt text](https://github.com/onlycaffeine/images/blob/main/help.png)
+  ![alt text](https://github.com/onlycaffeine/images/blob/main/h.png)
 ## Examples
 **1- Dictionary search to find the password for a get-form-login**
 <br />In this example I use my own dictionary
